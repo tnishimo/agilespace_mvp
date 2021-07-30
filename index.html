@@ -1,6 +1,314 @@
 <!DOCTYPE html>
 <html>
-    <body>
-        <h1>Hello World</h1>
-    </body>
+ <head>
+  <title>Agile Space MVP</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="styel.css">
+ </head>
+ <body>
+    <div id="app">
+        <div class="headder">
+            <div class="logo">
+                <img src="img/logo.png" alt="Agile Space MVP" width="250"
+            height="40" >
+            </div>
+            <div class="labName">
+                <h2>{{ labName() }}</h2>
+            </div>
+            <div class="sprintInfo">
+                <div>
+                    <select v-model="pbiData.commitNo">
+                        <option disabled value="">-</option>
+                        <option>Sprint0</option>
+                        <option>Sprint1</option>
+                        <option>Sprint2</option>
+                        <option>Sprint3</option>
+                        <option>Sprint4</option>
+                        <option>Sprint5</option>
+                        <option>Sprint6</option>
+                        <option>Sprint7</option>
+                        <option>Sprint8</option>
+                        <option>Sprint9</option>
+                        <option>Sprint10</option>
+                        <option>Sprint11</option>
+                        <option>Sprint12</option>
+                    </select>
+                </div>
+                <div class="pbi_taskSumally">
+                    <p>commit(pt):</p><p>aaaa</p>
+                    <p >Done(pt):</p><p>aaaa</p>
+                    <p>見積もり(h):</p><p>aaaaa</p>
+                    <p>完了タスク(h):</p><p>aaaaa</p>
+                    <p>進捗:</p><p>aaaaa</p>
+                </div>
+            </div> 
+        </div>
+
+        <div class="container">
+            <div id="backlog">
+                <div class="section_title">
+                    <h2>バックログ</h2>
+                </div>
+                <div class="inputarea">
+                    <h3>PBIの新規作成（ユーザーストーリーの入力）</h3>
+                    <textarea class="inputform" type="text" v-model="newTask" class="text_userstory" wrap="soft"> </textarea>
+                    <input class="inputarea_btn" type="button" value="作成" v-on:click="addTask" v-on:keydown.enter="addTask"> 
+                
+                </div>
+                <!--
+                <div class="pbi_command">
+                    
+                    <input type="button" value="削除">
+                    
+                    <input type="button" value="上へ">
+                    <input type="button" value="下へ">
+                    <div class="detailCommand">
+                        <label >背景色</label>
+                        <select v-model="pbiData.status">
+                            <option disabled value="">-</option>
+                            <option>Red </option>
+                            <option>Blue</option>
+                            <option>Green</option>
+                            <option>Blue</option>
+                            <option>Gray</option>
+                        </select>
+                    </div>
+                </div>
+                -->
+                <div class="pbi_list" >
+                    <div class="list" v-for="(item,index) in list" :key="item.id">
+                        <div class="pbi_userstoryID">
+                            <h4> {{ item.value }} </h4>
+                            <p> #: {{ item.id }}</p>
+                        </div>
+                        <div class="pbi_info">
+                            <div class="pbi_info_info">
+                                <button class="btn_2ndmini" v-on:click="detailBtn(item)" >詳細</button>
+                                <ul>
+                                    <li><p class="pbi_text">ポイント:</p><p> {{ item.storyPoint }}</p></li>
+                                    <li><p class="pbi_text">実施:</p><p>{{ item.commitNo }}</p></li>
+                                    <li><p class="pbi_text">ステータス:</p><p>{{ item.status }}</p></li>
+                                </ul>
+                            </div>
+                            <div class="pbi_info_command">
+                                <div class="pbi_info_command_regular">
+                                    <button v-on:click="pbiUp(index)" >上へ</button>
+                                    <button v-on:click="pbiDown(index)" >下へ</button>
+                                </div>
+                                <div class="pbi_info_command_delete">
+                                    <a>|</a>
+                                    <button v-on:click="deleteTask(item)" >削除</button>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div id="backlogDetail" >
+                <div class="section_title">
+                    <h2>PBI詳細</h2>
+                </div>
+                <div v-show="pbiDetail" v-model="list">
+                    <div class="detail_pbi_title">
+                        <p> PBI ID # {{ pbiData.id }}</p>
+                       <textarea type="text" v-model="pbiData.value" class="text_userstory" wrap="soft"> <h4> {{ pbiData.value }}</h4></textarea>
+                    </div>
+                    <div class="pbi_taskSumally">
+                        <p class="pbi_text">見積もり時間:</p><p>{{ pbiData.estimatedTime}}</p>
+                        <p class="pbi_text">対応時間:</p><p>{{ pbiData.timescale}}</p>
+                        <p class="pbi_text">進捗(%):</p><p>{{ pbiData.progressTime}}</p>
+                        <p class="pbi_text">進捗(h):</p><p>{{ pbiData.progressPercentage}}</p>
+                    </div>
+ 
+                    <div class="detail_dataselect">
+                        <div class="detailCommand">
+                            <label ><p class="pbi_text">ポイント</p></label>
+                            <select v-model="pbiData.storyPoint">
+                                <option disabled value="">-</option>
+                                <option>0</option>
+                                <option>1/2</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>5</option>
+                                <option>8</option>
+                                <option>13</option>
+                                <option>20</option>
+                                <option>40</option>
+                                <option>100</option>
+                            </select>
+                        </div>
+                        <div class="detailCommand">
+                            <label ><p class="pbi_text">実施</p></label>
+                            <select v-model="pbiData.commitNo">
+                                <option disabled value="">-</option>
+                                <option>Sprint0</option>
+                                <option>Sprint1</option>
+                                <option>Sprint2</option>
+                                <option>Sprint3</option>
+                                <option>Sprint4</option>
+                                <option>Sprint5</option>
+                                <option>Sprint6</option>
+                                <option>Sprint7</option>
+                                <option>Sprint8</option>
+                                <option>Sprint9</option>
+                                <option>Sprint10</option>
+                                <option>Sprint11</option>
+                                <option>Sprint12</option>
+                            </select>
+                        </div>
+                        <div class="detailCommand">
+                            <label><p class="pbi_text">ステータス</p></label>
+                            <select v-model="pbiData.status">
+                                <option disabled value="">-</option>
+                                <option>Draft</option>
+                                <option>Ready</option>
+                                <option>Doing</option>
+                                <option>Deliver</option>
+                                <option>Remaining work</option>
+                                <option>Done</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <form class="detail_form">
+                        <div class="detail_form_ui">
+                          <label>
+                            前提条件
+                            <textarea type="text" v-model="pbiData.precon" class="text_userstory" wrap="soft"></textarea>
+                          </label>
+                        </div>
+                        <div class="detail_form_ui">
+                            <label>
+                              受け入れ条件1
+                              <textarea type="text" v-model="pbiData.acceptanceCriteria1" class="text_userstory" wrap="soft"></textarea>
+                            </label>
+                         </div>
+                         <div class="detail_form_ui">
+                            <label>
+                              受け入れ条件2
+                              <textarea type="text" v-model="pbiData.acceptanceCriteria2" class="text_userstory" wrap="soft"></textarea> 
+                            </label>
+                         </div>
+                         <div  class="detail_form_ui">
+                            <label>
+                              受け入れ条件3
+                              <textarea type="text" v-model="pbiData.acceptanceCriteria3" class="text_userstory" wrap="soft"></textarea> 
+                            </label>
+                         </div>
+                         <div class="detail_form_ui_long">
+                            <label>
+                              メモ
+                              <textarea  v-model="pbiData.memo" class="text_userstory" wrap="soft"> </textarea>
+                            </label>
+                         </div>
+                    </form> 
+                </div>
+            </div>
+            <div id="backlogTask">
+                <div class="section_title">
+                    <h2>タスク一覧</h2>
+                </div>
+                <div v-show="pbiTasks" class="pbiarea" >
+                    <div class="inputarea">
+                        <h3>タスクの新規作成（タスク名）</h3>
+                        <textarea class="inputform" type="text" v-model="newTask2" wrap="hard" > </textarea>
+                        <input class="inputarea_btn" type="button" value="追加" v-on:click="addTask2" > 
+                    </div>
+                    <div class="pbi_list" >
+                        <div class="task_design" v-for="(item, index) in pbiData.pbitaskItems" :key="item.id">
+                            <div class="taskNameID">
+                                <h4> {{ item.task }} </h4>
+                                <p> #: {{ item.id }}</p>
+                            </div>
+                        <div class="task_info"> 
+                            <div class="tasktime">
+                                <div class="task_form_ui">
+                                    <label>
+                                        <p class="pbi_text">予測（時間）</p>
+                                        <input type="number"  v-model="item.yosoku" class="text_userstory" >
+                                    </label>
+                                </div>
+                                <div class="task_form_ui">
+                                    <label>
+                                        <p class="pbi_text">実績（時間）</p>
+                                        <input type="number" v-model="item.jisseki" class="text_userstory">
+                                    </label>
+                                </div>
+                                <div class="task_form_ui">
+                                    <p class="pbi_text">ステータス</p>
+                                        <select v-model="item.taskStatus">
+                                            <option disabled value="">-</option>
+                                            <option>Draft</option>
+                                            <option>Ready</option>
+                                            <option>Doing</option>
+                                            <option>Deliver</option>
+                                            <option>Remaining work</option>
+                                            <option>Done</option>
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="task_command">
+                                <div class="task_command_block">
+                                    <button v-on:click="taskUp(index)" >上へ</button>
+                                    <button v-on:click="taskDown(index)" >下へ</button>
+                                    <a>|</a>
+                                    <button v-on:click="deleteTask3(item)" >タスクの削除</button>
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+            
+
+
+            <!--
+            <div id="backlogTask">
+                <div class="section_title">
+                    <h2>タスク一覧</h2>
+                </div>
+                <div v-show="pbiTasks" class="pbiarea" >
+                    <div class="inputarea">
+                        <h3>タスクの新規作成（タスク名）</h3>
+                        <textarea class="inputform" type="text" v-model="newTask2" > </textarea>
+                        <input class="inputarea_btn" type="button" value="追加" v-on:click="addTask2" > 
+                    </div>
+                    <div class="pbi_list" >
+                        <div class="task_design" v-for="item in pbiData.pbitaskItems" :key="item.id">
+                            <p> {{ item.task }} </p>
+                            <p> #: {{ item.id }}</p>
+                            <div>
+                                <label>
+                                予測
+                                <input type="text"  v-model="item.yosoku" class="text_userstory" > aaa
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                実績
+                                <input type="text" v-model="item.jisseki" class="text_userstory"> bbb
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        -->
+
+            
+        </div>
+    </div>
+
+
+    <script src="vue.js"></script>
+    <script src="index.js"></script>
+ </body>
 </html>
